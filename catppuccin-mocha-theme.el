@@ -48,7 +48,9 @@
     ;; `load-path', so a plain `require' cannot find it).
     (require-theme 'modus-themes)))
 
+(require 'cl-lib)
 (require 'catppuccin-modus-definitions)
+(require 'catppuccin-lib)
 
 ;;;; User customization options
 
@@ -89,164 +91,177 @@ Theme-specific overrides take precedence over shared overrides."
 ;; which provides every named color and semantic mapping not listed.
 
 (defconst catppuccin-mocha-theme-palette
-  (append
-   catppuccin-definitions-mocha
-  '(
-     ;; Basic values (only bg-main/fg-main bg-dim/fg-dim/fg-alt, which
-     ;; feed shadow, metadata, etc.)
+  (cl-flet* ((color (name) (car (alist-get name catppuccin-definitions-mocha)))
+             (darken (name &optional value) (catppuccin-darken (color name) (or value 10)))
+             (lighten (name &optional value) (catppuccin-lighten (color name) (or value 10))))
+    (append
+     catppuccin-definitions-mocha
+     `(
+       (fg-alt subtext0)
+       (fg-dim overlay0)
+       
+       ;; Special purpose
 
-     (bg-main base)
-     (fg-main text)
+       (bg-completion       ,(darken 'base))
+       (bg-hl-line          ,(darken 'base))
+       (bg-region           ,(lighten 'base 17))
+       (bg-popup            mantle)
+       (bg-hover            bg-cyan-intense)
+       (bg-hover-secondary  bg-yellow-subtle)
 
-     ;; Catppuccin-Mocha named colors
+       ;; Mode-line
 
-     (bg-deep    "#080c16")
-     (teal-soft  "#8ecede")
-     (teal-dark  "#2a4a5a")
-     (neon-cyan  "#00e5ff")
-     (cyan-soft  "#00c5dd")
-     (cyan-deep  "#00b8cc")
-     (neon-green "#00cc77")
-     (hot-pink   "#ff0044")
-     (pink-soft  "#ff4466")
-     (amber      "#ffaa00")
-     (orange     "#ff8800")
-     (purple     "#cc55ff")
-     (teal-faint "#1a3a50")
-     (teal-dim   "#2d5a70")
-     (teal-mid   "#4a7a8a")
+       (bg-mode-line-active mantle)
+       (fg-mode-line-active text)
+       (border-mode-line-active unspecified)
+       (bg-mode-line-inactive crust)
+       (fg-mode-line-inactive overlay0)
+       (border-mode-line-inactive unspecified)
 
-     ;; Special purpose
+       (modeline-err     red)
+       (modeline-warning yellow)
+       (modeline-info    sapphire)
 
-     (bg-completion      "#0a1a2a")
-     (bg-hl-line         "#0d1e2e")
-     (bg-region          "#0d2840")
-     (fg-region          teal-soft)
-     (bg-hover-secondary "#0d2030")
+       ;; Tab bar
 
-     ;; Mode-line
+       (bg-tab-bar base)
+       (bg-tab-current mantle)
+       (bg-tab-other bg-main)
 
-     (bg-mode-line-active       mantle)
-     (fg-mode-line-active       text)
-     (border-mode-line-active   unspecified)
-     (bg-mode-line-inactive     crust)
-     (fg-mode-line-inactive     overlay0)
-     (border-mode-line-inactive unspecified)
+       ;; Diffs
 
-     ;; Tab bar
+       (bg-added          ,(darken 'green 60))
+       (bg-added-refine   ,(darken 'green 40))
+       (bg-changed        ,(darken 'blue 60))
+       (bg-changed-refine ,(darken 'blue 40))
+       (bg-removed        ,(darken 'red 60))
+       (bg-removed-refine ,(darken 'red 40))
 
-     (bg-tab-bar     bg-main)
-     ;; TODO(olivia): Make darker
-     (bg-tab-current bg-main)
-     (bg-tab-other   bg-main)
+       (fg-added green)
+       (fg-changed yellow)
+       (fg-removed red)
 
-     ;; Diffs
+       ;; Paren match
+       (bg-paren-match        bg-main)
+       (fg-paren-match        rosewater)
+       (bg-paren-expression   bg-yellow-nuanced)
 
-     (bg-added          "#0a2018")
-     (bg-added-refine   "#143a22")
-     (bg-changed        "#0a1e38")
-     (bg-changed-refine "#142840")
-     (bg-removed        "#2a0a14")
-     (bg-removed-refine "#3a1020")
+       ;; General mappings
 
-     ;; General mappings
+       (cursor rosewater)
+       (name mauve)
+       (identifier mauve)
+       (fringe bg-main)
 
-     (cursor rosewater)
-     (name mauve)
-     (identifier purple)
-     (fringe bg-main)
+       (err red)
+       (warning yellow)
+       (info green)
 
-     (err red)
-     (warning yellow)
-     (info green)
+       (bg-active bg-main)
+       (bg-prominent-err bg-removed)
+       (fg-prominent-err peach)
 
-     (bg-active bg-main)
-     (bg-prominent-err bg-removed)
-     (fg-prominent-err hot-pink)
+       ;; Code mappings
 
-     ;; Code mappings
+       (builtin red)
+       (comment overlay0)
+       (constant peach)
+       (docstring overlay1)
+       (fnname blue)
+       (keyword mauve)
+       (number peach)
+       (property blue)
+       (string green)
+       (type yellow)
+       (variable text)
+       (parenthesis shadow)
+       (shadow comment)
 
-     (builtin neon-cyan)
-     (comment overlay0)
-     (constant pink-soft)
-     (docstring teal-mid)
-     (fnname cyan-soft)
-     (keyword purple)
-     (number amber)
-     (property cyan-deep)
-     (string neon-green)
-     (type amber)
-     (variable orange)
+       ;; Accent mappings
 
-     ;; Accent mappings
+       (accent-0 blue)
+       (accent-1 pink)
+       (accent-2 sky)
+       (accent-3 red)
 
-     (accent-0 neon-cyan)
-     (accent-1 hot-pink)
+       ;; Completion mappings
 
-     ;; Completion mappings
+       (bg-completion-match-0 surface0)
+       (bg-completion-match-1 surface0)
+       (bg-completion-match-2 surface0)
+       (bg-completion-match-3 surface0)
+       (fg-completion-match-0 sky)
+       (fg-completion-match-1 pink)
+       (fg-completion-match-2 green)
+       (fg-completion-match-3 peach)
 
-     (bg-completion-match-0 surface0)
-     (bg-completion-match-1 surface0)
-     (bg-completion-match-2 surface0)
-     (bg-completion-match-3 surface0)
-     (fg-completion-match-0 sky)
-     (fg-completion-match-1 pink)
-     (fg-completion-match-2 green)
-     (fg-completion-match-3 peach)
+       ;; Date mappings
 
-     ;; Date mappings
+       ;; (date-weekday sky)
+       ;; (date-weekend peach)
 
-     (date-weekday neon-cyan)
-     (date-weekend amber)
+       ;; Line number mappings
 
-     ;; Line number mappings
+       ;; TODO(olivia): Toggleable option
+       (bg-line-number-active mantle)
+       (bg-line-number-inactive mantle)
+       (fg-line-number-active lavender)
+       (fg-line-number-inactive surface1)
 
-     ;; TODO(olivia): Toggleable option
-     (bg-line-number-active mantle)
-     (bg-line-number-inactive mantle)
-     (fg-line-number-active lavender)
-     (fg-line-number-inactive surface1)
+       ;; Link mappings
 
-     ;; Link mappings
+       (fg-link lavender)
 
-     (fg-link neon-cyan)
+       ;; Mark mappings
 
-     ;; Mark mappings
+       (bg-mark-delete bg-removed)
+       (fg-mark-delete red)
+       (bg-mark-select bg-changed)
+       (fg-mark-select sky)
 
-     (bg-mark-delete bg-removed)
-     (fg-mark-delete hot-pink)
-     (bg-mark-select bg-changed)
-     (fg-mark-select neon-cyan)
+       ;; Prompt mappings
 
-     ;; Prompt mappings
+       (bg-prompt unspecified)
+       (fg-prompt subtext0)
 
-     (bg-prompt unspecified)
-     (fg-prompt purple)
+       ;; Prose mappings
 
-     ;; Prose mappings
+       (bg-prose-block-contents mantle)
+       (bg-prose-block-delimiter bg-prose-block-contents)
+       (fg-prose-block-delimiter surface0)
+       (fg-prose-verbatim green)
 
-     (bg-prose-block-contents "#0d1628")
-     (bg-prose-block-delimiter bg-prose-block-contents)
-     (fg-prose-block-delimiter teal-faint)
-     (fg-prose-verbatim neon-green)
+       ;; Search mappings
 
-     ;; Search mappings
+       (bg-search-current red)
+       (fg-search-current bg-main)
+       (bg-search-lazy bg-region)
+       (fg-search-lazy sapphire)
+       (bg-search-static bg-region)
+       (fg-search-static teal)
 
-     (bg-search-current hot-pink)
-     (fg-search-current bg-main)
-     (bg-search-lazy bg-region)
-     (fg-search-lazy teal-soft)
-     (bg-search-static bg-region)
-     (fg-search-static teal-soft)
+       ;; Heading mappings
 
-     ;; Heading mappings
+       (fg-heading-0 red)
+       (fg-heading-1 peach)
+       (fg-heading-2 yellow)
+       (fg-heading-3 green)
+       (fg-heading-4 sapphire))
 
-     (fg-heading-0 hot-pink)
-     (fg-heading-1 pink-soft)
-     (fg-heading-2 amber)
-     (fg-heading-3 neon-green)
-     (fg-heading-4 neon-cyan))
-   modus-themes-vivendi-palette)
+     ;; Generate a palette using the catppuccin colors. This takes care to generate all of the
+     ;; variations of the colors that the modus themes are powered by.
+     ;; TODO(olivia): Make the mapping user configurable, e.g. choosing between lavender and mauve
+     ;; for the magenta base.
+     (modus-themes-generate-palette
+      `((bg-main ,(color 'base))
+        (fg-main ,(color 'text))
+        (magenta ,(color 'mauve))
+        (red     ,(color 'red))
+        (yellow  ,(color 'yellow))
+        (green   ,(color 'green))
+        (cyan    ,(color 'sky))
+        (blue    ,(color 'blue)))
+      'cool)))
   "The entire palette of the `catppuccin-mocha' theme.
 
 This palette is based on `modus-themes-vivendi-palette' with the
@@ -273,34 +288,34 @@ exists in the palette and is associated with a HEX-VALUE.")
     ;; `modus-themes-italic-constructs', `modus-themes-bold-constructs',
     ;; or `modus-themes-prompts' (those are shared across all modus
     ;; themes, so setting them here as variables would leak).
-    `(modus-themes-bold ((,c :inherit bold)))
-    `(modus-themes-slant ((,c :inherit italic)))
-    `(modus-themes-prompt ((,c :inherit bold :background ,bg-prompt :foreground ,fg-prompt)))
+    ;; `(modus-themes-bold ((,c :inherit bold)))
+    ;; `(modus-themes-slant ((,c :inherit italic)))
+    ;; `(modus-themes-prompt ((,c :inherit bold :background ,bg-prompt :foreground ,fg-prompt)))
 ;;;;; change-log and log-view (also vc-print-log)
-    `(change-log-acknowledgment ((,c :foreground ,neon-cyan)))
-    `(change-log-date ((,c :foreground ,neon-green)))
-    `(change-log-name ((,c :foreground ,amber)))
-    `(log-view-message ((,c :foreground ,neon-cyan)))
+    ;; `(change-log-acknowledgment ((,c :foreground ,sapphire)))
+    ;; `(change-log-date ((,c :foreground ,green)))
+    ;; `(change-log-name ((,c :foreground ,peach)))
+    ;; `(log-view-message ((,c :foreground ,sapphire)))
 ;;;;; completion
-    `(modus-themes-completion-selected ((,c :background ,bg-completion :foreground ,teal-soft)))
+    `(modus-themes-completion-selected ((,c :background ,bg-completion :foreground ,sky)))
 ;;;;; diff-mode
-    `(diff-context ((,c :foreground ,teal-faint)))
-    `(diff-file-header ((,c :foreground ,pink-soft)))
-    `(diff-header ((,c :foreground ,neon-cyan)))
-    `(diff-hunk-header ((,c :foreground ,amber)))
+    ;; `(diff-context ((,c :foreground ,surface0)))
+    ;; `(diff-file-header ((,c :foreground ,pink)))
+    ;; `(diff-header ((,c :foreground ,sapphire)))
+    ;; `(diff-hunk-header ((,c :foreground ,peach)))
 ;;;;; gnus
-    `(gnus-button ((,c :foreground ,neon-cyan)))
-    `(gnus-group-mail-3 ((,c :foreground ,neon-cyan)))
-    `(gnus-group-mail-3-empty ((,c :foreground ,neon-cyan)))
-    `(gnus-header-content ((,c :foreground ,fg-main)))
-    `(gnus-header-from ((,c :foreground ,purple)))
-    `(gnus-header-name ((,c :foreground ,neon-green)))
-    `(gnus-header-subject ((,c :foreground ,neon-cyan)))
+    ;; `(gnus-button ((,c :foreground ,sapphire)))
+    ;; `(gnus-group-mail-3 ((,c :foreground ,sapphire)))
+    ;; `(gnus-group-mail-3-empty ((,c :foreground ,sapphire)))
+    ;; `(gnus-header-content ((,c :foreground ,fg-main)))
+    ;; `(gnus-header-from ((,c :foreground ,mauve)))
+    ;; `(gnus-header-name ((,c :foreground ,green)))
+    ;; `(gnus-header-subject ((,c :foreground ,sapphire)))
 ;;;;; newsticker
-    `(newsticker-extra-face ((,c :foreground ,teal-faint :height 0.8 :slant italic)))
-    `(newsticker-feed-face ((,c :foreground ,hot-pink :height 1.2 :weight bold)))
-    `(newsticker-treeview-face ((,c :foreground ,fg-main)))
-    `(newsticker-treeview-selection-face ((,c :background ,bg-region :foreground ,teal-soft)))
+    ;; `(newsticker-extra-face ((,c :foreground ,surface0 :height 0.8 :slant italic)))
+    ;; `(newsticker-feed-face ((,c :foreground ,red :height 1.2 :weight bold)))
+    ;; `(newsticker-treeview-face ((,c :foreground ,fg-main)))
+    ;; `(newsticker-treeview-selection-face ((,c :background ,bg-region :foreground ,sky)))
 ;;;;; tab-bar
     ;; :box nil is load-bearing: the built-in `tab-bar-tab' defface sets a
     ;; `released-button' box on dark displays, and `tab-bar-tab-inactive'
@@ -309,13 +324,40 @@ exists in the palette and is associated with a HEX-VALUE.")
     ;; modus's own tab specs, so without :box nil the defface box leaks through
     ;; and every tab renders highlighted.
     `(tab-bar ((,c :background ,bg-main :foreground ,subtext0 :box nil)))
-    `(tab-bar-tab ((,c :background ,base :foreground ,text :underline nil :box nil)))
+    `(tab-bar-tab ((,c :background ,crust :foreground ,lavender :underline nil :box nil)))
     `(tab-bar-tab-inactive ((,c :background ,bg-main :foreground ,subtext0 :box nil)))
-    `(tab-bar-tab-group-current ((,c :background ,bg-main :foreground ,teal-soft :box nil)))
-    `(tab-bar-tab-group-inactive ((,c :background ,bg-main :foreground ,teal-dark :box nil)))
+    `(tab-bar-tab-group-current ((,c :background ,crust :foreground ,sky :box nil)))
+    `(tab-bar-tab-group-inactive ((,c :background ,bg-main :foreground ,surface0 :box nil)))
+
+    ;; magit
+    `(magit-branch-local ((,c :foreground ,teal)))
+    `(magit-branch-remote ((,c :foreground ,green)))
+    `(magit-tag ((,c :foreground ,peach)))
+    `(magit-section-heading ((,c :foreground ,blue :weight bold)))
+    `(magit-section-highlight ((,c :background ,surface0 :extend t)))
+    `(magit-diff-context-highlight ((,c :background ,surface0 :foreground ,text :extend t)))
+    `(magit-diff-revision-summary ((,c :foreground ,blue :weight bold)))
+    `(magit-diff-revision-summary-highlight ((,c :foreground ,blue :weight bold)))
+    `(magit-diff-added ((,c :foreground ,green :extend t)))
+    `(magit-diff-added-highlight ((,c :background ,surface1 :foreground ,green :extend t)))
+    `(magit-diff-removed ((,c :foreground ,red :extend t)))
+    `(magit-diff-removed-highlight ((,c :background ,surface1 :foreground ,red :extend t)))
+    `(magit-diff-file-heading ((,c :foreground ,text)))
+    `(magit-diff-file-heading-highlight ((,c :inherit magit-section-highlight)))
+    `(magit-diffstat-added ((,c :foreground ,green)))
+    `(magit-diffstat-removed ((,c :foreground ,red)))
+    `(magit-hash ((,c :foreground ,subtext0)))
+    `(magit-diff-hunk-heading ((,c :inherit diff-hunk-header)))
+    `(magit-diff-hunk-heading-highlight ((,c :inherit diff-hunk-header :weight bold)))
+    `(magit-log-author ((,c :foreground ,subtext0)))
+    `(magit-process-ng ((,c :foreground ,peach :weight bold)))
+    `(magit-process-ok ((,c :foreground ,green :weight bold)))
+
+
 ;;;;; vc-dir
     ;; vc-dir-file already follows the `name' mapping (neon cyan)
-    `(vc-dir-header-value ((,c :foreground ,fg-main))))
+    ;; `(vc-dir-header-value ((,c :foreground ,fg-main)))
+    )
   "Custom face overrides for the `catppuccin-mocha' theme.")
 
 (defconst catppuccin-mocha-theme-custom-variables nil
@@ -325,7 +367,7 @@ exists in the palette and is associated with a HEX-VALUE.")
 
 (modus-themes-theme
  'catppuccin-mocha
- 'catppuccin-mocha
+ 'catppuccin
  ""
  'dark
  'catppuccin-mocha-theme-palette

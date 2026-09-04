@@ -7,10 +7,10 @@ whiskers:
 ;;; {{ whiskers.filename }} --- The Catppuccin palette -*- lexical-binding: t; -*-
 {% for id, flavor in flavors %}
 (defconst catppuccin-definitions-{{ id }}
- '({% for id, color in flavor.colors -%}
-   ({{ id }} "{{ color.hex }}"){% if not loop.last %}
-   {% endif %}{% endfor %})
- "Color palette used for the Catppuccin {{ id }} flavor")
+  '({% for id, color in flavor.colors -%}
+     ({{ id }} "{{ color.hex }}"){% if not loop.last %}
+    {% endif %}{% endfor %})
+  "Color palette used for the Catppuccin {{ id }} flavor")
 {% endfor %}
 (provide 'catppuccin-modus-definitions)
 ;;; {{ whiskers.filename }} ends here

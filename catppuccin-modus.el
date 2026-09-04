@@ -33,19 +33,29 @@
 ;; 🍄 Soothing pastel theme for Emacs
 ;;
 ;; catppuccin-modus.el provides the theme `catppuccin', a port of the
-;; Catppuccin colors to Emacs.  To select a palette and enable the theme,
-;; evaluate:
-;;
-;;     (setq catppuccin-flavor 'frappe) ; or 'latte, 'macchiato, or 'mocha
-;;     (load-theme 'catppuccin t)
+;; Catppuccin colors to Emacs.
 ;;
 ;; For more information visit <https://catppuccin.com>.
 
 ;;; Code:
 
-;; (eval-when-compile (require 'subr-x))
+(eval-when-compile (require 'subr-x))
 
-(require 'catpuccin-mocha-theme)
+(eval-and-compile
+  (unless (require 'modus-themes nil :noerror)
+    ;; Fall back to the copy bundled with Emacs (etc/themes is not in
+    ;; `load-path', so a plain `require' cannot find it).
+    (require-theme 'modus-themes)))
+
+(require 'catppuccin-latte-theme)
+(require 'catppuccin-frappe-theme)
+(require 'catppuccin-macchiato-theme)
+(require 'catppuccin-mocha-theme)
+
+;;;###autoload
+(when load-file-name
+  (add-to-list 'custom-theme-load-path
+               (file-name-as-directory (file-name-directory load-file-name))))
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil

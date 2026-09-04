@@ -299,6 +299,18 @@ exists in the palette and is associated with a HEX-VALUE." flavor (capitalize fl
            `(tab-bar-tab-group-current ((,c :background ,crust :foreground ,sky :box nil)))
            `(tab-bar-tab-group-inactive ((,c :background ,bg-main :foreground ,surface0 :box nil)))
 
+           ;; git-gutter
+           `(git-gutter:modified ((,c :foreground ,peach)))
+           `(git-gutter:deleted ((,c :foreground ,red)))
+           `(git-gutter:added ((,c :foreground ,green)))
+           `(git-gutter:separator ((,c :foreground ,comment)))
+           `(git-gutter:unchanged ((,c :foreground ,surface0)))
+
+           ;; git-gutter fringe
+           `(git-gutter-fr:modified ((,c :inherit git-gutter:modified)))
+           `(git-gutter-fr:deleted ((,c :inherit git-gutter:deleted)))
+           `(git-gutter-fr:added ((,c :inherit git-gutter:added)))
+
            ;; magit
            `(magit-branch-local ((,c :foreground ,teal)))
            `(magit-branch-remote ((,c :foreground ,green)))
